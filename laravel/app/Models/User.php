@@ -3,15 +3,36 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
+    /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'user_id'; // Specify the new primary key column name
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false; // Set to true if `user_id` is auto-incrementing
+
+    /**
+     * The type of the auto-incrementing ID.
+     *
+     * @var int
+     */
+    protected $keyType = 'int'; // Use 'int' if `user_id` is an integer field
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +40,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'display_name',
+        'username',
         'email',
         'password',
     ];
@@ -45,5 +67,19 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    /**
+     * One user can have many posts.
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+    /**
+     * One user can have many comments.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comments::class);
     }
 }

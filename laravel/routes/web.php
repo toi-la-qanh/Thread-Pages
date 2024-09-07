@@ -1,9 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PostController;
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    Route::resource('posts', PostController::class);
 });
 
 require __DIR__.'/auth.php';

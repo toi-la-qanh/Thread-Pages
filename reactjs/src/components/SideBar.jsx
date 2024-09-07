@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { faHome, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-const NavBar = () => {
+const SideBar = () => {
   const [components, setComponents] = useState(false);
   const Components = [
     {
@@ -41,7 +41,7 @@ const NavBar = () => {
 
   return (
     <>
-      <div className="flex shadow-sm rounded-md top-0 fixed z-10 bg-white border-black border-b justify-between px-10 py-2 mx-auto w-full md:items-center md:flex">
+      <div className="flex justify-between px-10 py-2 mx-auto w-full md:items-center md:flex">
         <div className="flex items-center justify-between py-3 md:py-5 md:block">
           <NavLink
             to="/"
@@ -63,8 +63,8 @@ const NavBar = () => {
                   to={item.link}
                   className={({ isActive }) =>
                     isActive
-                      ? "border-b-2 border-black text-gray-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
-                      : "text-black text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
+                      ? "border-b-2 border-black text-slate-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
+                      : "text-slate-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
                   }
                 >
                   {item.icon}
@@ -90,4 +90,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default SideBar;

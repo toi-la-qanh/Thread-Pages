@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+// use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
 class AuthenticatedSessionController extends Controller
@@ -24,9 +24,17 @@ class AuthenticatedSessionController extends Controller
          */
         $user = Auth::user();
 
+        // Check if the user already has an active token
+        $token = $user->tokens()->where('name', 'Default')->first();
+
+        if (!$token) {
+            // Create a new token if none exists
+            $token = $user->createToken('Default')->plainTextToken;
+        }
+
         return response()->json([
-            'user' => $user,
-            'token' => $user->createToken($user->name)->plainTextToken,
+            'message' => 'Người dùng ' . $user->display_name . ' đăng nhập thành công !',
+            'token' => $token,
         ]);
     }
 
@@ -35,18 +43,31 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): JsonResponse
     {
-        
+        $user = Auth::user();
 
-        $request->session()->invalidate();
+        // Check if the user is authenticated
+        if (!$user) {
+            return response()->json([
+                'message' => 'Không có người dùng nào để đăng xuất !',
+            ], 401); 
+        }
 
-        $request->session()->regenerateToken();
-
-        // $request->user()->token()->delete();
+        // Revoke the current user's token if using Laravel Sanctum or Passport
+        if (method_exists($user, 'tokens')) {
+            // Optionally, you can revoke all tokens or a specific token
+            $user->tokens()->delete(); // Revoke all tokens
+            // $user->tokens()->where('name', 'Default')->delete(); // Optionally revoke a specific token
+        }
 
         Auth::guard('web')->logout();
 
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return response()->json([
-            'message' => 'Logged out',
+            'message' => 'Người dùng ' . $user->display_name . ' đăng xuất thành công !',
         ]);
     }
 }
