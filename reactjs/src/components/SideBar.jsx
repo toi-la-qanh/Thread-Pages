@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
@@ -11,38 +11,55 @@ import { faHome, faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const SideBar = () => {
   const [components, setComponents] = useState(false);
+  const location = useLocation();
+  const currentPath = location.pathname;
   const Components = [
     {
+      name: "Home",
       icon: (
         <FontAwesomeIcon
-          className="px-1 text-3xl focus:border-b"
+          className="px-1 text-2xl focus:border-b"
           icon={faHome}
         />
       ),
       link: "/",
     },
     {
-      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faSearch} />,
+      name: "Search",
+      icon: <FontAwesomeIcon className="px-1 text-2xl" icon={faSearch} />,
       link: "/search",
     },
     {
-      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faNewspaper} />,
+      name: "Post",
+      icon: <FontAwesomeIcon className="px-1 text-2xl" icon={faNewspaper} />,
       link: "/post",
     },
     {
-      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faHeart} />,
+      name: "Notification",
+      icon: <FontAwesomeIcon className="px-1 text-2xl" icon={faHeart} />,
       link: "/notification",
     },
     {
-      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faUser} />,
+      name: "Profile",
+      icon: <FontAwesomeIcon className="px-1 text-2xl" icon={faUser} />,
       link: "/profile",
     },
   ];
 
+  const getCurrentComponentName = (path) => {
+    const component = Components.find((comp) => comp.link === path);
+    if (component) {
+      return component.name;
+    }
+    return null;
+  };
+
+  const currentComponentName = getCurrentComponentName(currentPath);
+
   return (
     <>
-      <div className="flex justify-between px-10 py-2 mx-auto w-full md:items-center md:flex">
-        <div className="flex items-center justify-between py-3 md:py-5 md:block">
+      <div className="top-0 sticky z-10 bg-gray-50">
+        <div className="flex flex-row items-center justify-between p-4">
           <NavLink
             to="/"
             className="text-3xl text-black-50 font-mono tracking-[0.1rem]"
@@ -50,21 +67,22 @@ const SideBar = () => {
             23:59'
             <FontAwesomeIcon className="px-1" icon={faMoon} />
           </NavLink>
+          <div className="w-7">{currentComponentName}</div>
+          <div className="w-48">{}</div>
         </div>
+
         <div
-          className={`flex items-center md:block ${
-            components ? "block" : "hidden"
-          }`}
+          className="absolute w-16 top-20 h-96 md:flex hidden" 
         >
-          <ul className="list-none lg:flex md:flex sm:block block gap-x-14">
+          <ul className="flex flex-col list-none justify-between w-full h-full">
             {Components.map((item, index) => (
-              <li key={index}>
+              <li className="w-full h-12" key={index}>
                 <NavLink
                   to={item.link}
                   className={({ isActive }) =>
                     isActive
-                      ? "border-b-2 border-black text-slate-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
-                      : "text-slate-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
+                      ? "bg-gray-300 flex items-center justify-center w-full h-full font-light tracking-wider text-gray-600 ease-out duration-700"
+                      : "flex items-center justify-center w-full h-full font-light tracking-wider hover:bg-gray-300 ease-out duration-700"
                   }
                 >
                   {item.icon}
@@ -72,18 +90,6 @@ const SideBar = () => {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="flex items-center justify-between py-3 md:py-5 md:block">
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              isActive
-                ? "text-black text-[1rem] font-medium border shadow bg-gray-300 rounded-xl py-2 px-3 tracking-wider"
-                : "text-black text-[1rem] font-medium border shadow shadow-gray-400 rounded-xl py-2 px-3 tracking-wider hover:bg-gray-300 ease-out duration-700 "
-            }
-          >
-            Đăng nhập
-          </NavLink>
         </div>
       </div>
     </>

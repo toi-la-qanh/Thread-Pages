@@ -1,70 +1,20 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 
 const Register = () => {
-  const { setUser, csrfToken } = useAuth();
-  const [name, setName] = useState("");
+  const { register, errors } = useAuth();
+  const [display_name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPasswordConfirm] = useState("");
-  const navigate = useNavigate();
-
-  const [formError, setFormError] = useState({
-    name: "",
-    email: "",
-    password: "",
-    password_confirmation: "",
-  });
 
   const validateFormInput = async (event) => {
     event.preventDefault();
-
-    csrfToken();
-
-    try {
-      const result = await axios.post(
-        "http://localhost:8000/api/register",
-        {
-          display_name: name,
-          email,
-          password,
-          password_confirmation,
-        },
-        {
-          withCredentials: true,
-          withXSRFToken: true,
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      setUser({
-        email: result.data.user.email,
-      });
-      navigate("/login");
-    } catch (error) {
-      if (error.response) {
-        setFormError({
-          name: error.response.data.errors.display_name,
-          email: error.response.data.errors.email,
-          password: error.response.data.errors.password,
-          password_confirmation:
-            error.response.data.errors.password_confirmation,
-        });
-        if (error.response.status === 422) {
-          console.log("Unauthorized access:", error.response);
-        } else {
-          console.error("Failed to login:", error.response);
-        }
-      } else {
-        console.error("Error:", error.message);
-      }
-    }
+    await register({display_name, email, password, password_confirmation});
   };
 
   return (
@@ -83,7 +33,7 @@ const Register = () => {
             <div className="flex gap-5 items-center">
               <FontAwesomeIcon className="text-2xl" icon={faUser} />
               <input
-                value={name}
+                value={display_name}
                 onChange={(e) => {
                   setName(e.target.value);
                 }}
@@ -96,7 +46,7 @@ const Register = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.name}</p>
+            <p className="text-red-800">{errors?.display_name}</p>
             <div className="flex gap-4 items-center">
               <FontAwesomeIcon className="text-2xl" icon={faEnvelope} />
               <input
@@ -113,7 +63,7 @@ const Register = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.email}</p>
+            <p className="text-red-800">{errors?.email}</p>
             <div className="flex gap-5 items-center">
               <FontAwesomeIcon className="text-2xl" icon={faLock} />
               <input
@@ -130,7 +80,7 @@ const Register = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.password}</p>
+            <p className="text-red-800">{errors?.password}</p>
             <div className="flex gap-5 items-center">
               <FontAwesomeIcon className="text-2xl" icon={faLock} />
               <input
@@ -147,7 +97,7 @@ const Register = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.password_confirmation}</p>
+            <p className="text-red-800">{errors?.password_confirmation}</p>
             <button
               type="submit"
               className="flex w-full justify-center items-center rounded-md bg-black h-9 text-base 

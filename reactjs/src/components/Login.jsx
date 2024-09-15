@@ -1,59 +1,18 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
-  const { user, setUser, csrfToken } = useAuth();
-  const [email, setEmail] = useState(() => user?.email || "");
+  const { login, errors } = useAuth();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
-
-  const [formError, setFormError] = useState({
-    email: "",
-    password: "",
-  });
 
   const validateFormInput = async (event) => {
     event.preventDefault();
-
-    csrfToken();
-
-    try {
-      const result = await axios.post(
-        "http://localhost:8000/login",
-        {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
-          withXSRFToken: true,
-          headers: {
-            Accept: "application/json",
-          },
-        }
-      );
-      setUser(result.data.user);
-      navigate("/");
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 422) {
-          console.log("Unauthorized access:", error.response);
-          setFormError({
-            email: error.response.data.errors.email,
-            password: error.response.data.errors.password,
-          });
-        } else {
-          console.error("Failed to login:", error.response);
-        }
-      } else {
-        console.error("Error:", error.message);
-      }
-    }
+    await login({email, password});
   };
   return (
     <div className="flex text-black w-full flex-col justify-center items-center">
@@ -86,7 +45,7 @@ const Login = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.email}</p>
+            <p className="text-red-800">{errors?.email}</p>
 
             <div className="flex justify-end text-sm">
               <Link
@@ -112,7 +71,7 @@ const Login = () => {
           sm:leading-6"
               />
             </div>
-            <p className="text-red-800">{formError.password}</p>
+            <p className="text-red-800">{errors?.password}</p>
 
             <div>
               <button

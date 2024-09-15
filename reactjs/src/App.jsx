@@ -8,21 +8,31 @@ import Login from "./components/Login";
 import ProtectedLayout from "./layout/ProtectedLayout";
 import GuestLayout from "./layout/GuestLayout";
 import Post from "./components/Post";
+import { useAuth } from "./contexts/AuthContext";
+import SideBar from "./components/SideBar";
+import NavBar from "./components/NavBar";
+import SpecifiedPost from "./components/SpecifiedPost";
 
 function App() {
+  const { token } = useAuth();
   return (
     <>
       <Routes>
-        <Route path="/" element={<GuestLayout />}>
-          <Route index element={<Home />}></Route>
-          <Route exact path="/login" element={<Login />}></Route>
-          <Route exact path="/register" element={<Register />}></Route>
-          <Route exact path="/search" element={<Search />}></Route>
-        </Route>
-        <Route path="/" element={<ProtectedLayout />}>
-          {/* <Route index element={<Home />}></Route> */}
-          <Route exact path="/post" element={<Post />}></Route>
-          <Route exact path="/profile" element={<Profile />}></Route>
+        <Route path="/" element={token ? <ProtectedLayout /> : <GuestLayout />}>
+          <Route path="/search" element={<Search />} />
+          <Route index element={<Home />} />
+          <Route path="/post" element={<Post />} />
+          <Route path="/post/:id" element={<SpecifiedPost />} />
+          {!token ? (
+            <>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </>
+          ) : (
+            <>
+              <Route path="/profile" element={<Profile />} />
+            </>
+          )}
         </Route>
       </Routes>
     </>

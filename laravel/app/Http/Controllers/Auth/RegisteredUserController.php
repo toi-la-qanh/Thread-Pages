@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
-// use Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,12 +17,12 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function store(Request $request): JsonResponse
     {
         // $request->merge(['email' => strtolower($request->input('email'))]);
 
         $request->validate([
-            'username' => ['required', 'string', 'regex:/^[A-Za-z][A-Za-z0-9]*$/', 'min:5', 'max:20'],
+            // 'username' => ['required', 'string', 'regex:/^[A-Za-z][A-Za-z0-9]*$/', 'min:5', 'max:20'],
             'display_name' => ['required', 'string', 'regex:/^[\p{L}\sà-ỹÀ-Ỵ]+$/u', 'min:6', 'max:30'],
             'email' => [
                 'required',
@@ -42,10 +41,10 @@ class RegisteredUserController extends Controller
             ],
             'password_confirmation' => ['same:password'],
         ], [
-            'username.required' => 'Tên tài khoản không được để trống !',
-            'username.regex' => 'Tên tài khoản phải bắt đầu là chữ !',
-            'username.min' => 'Tên tài khoản tối thiểu 5 ký tự !',
-            'username.max' => 'Tên tài khoản tối đa 20 ký tự !',
+            // 'username.required' => 'Tên tài khoản không được để trống !',
+            // 'username.regex' => 'Tên tài khoản phải bắt đầu là chữ !',
+            // 'username.min' => 'Tên tài khoản tối thiểu 5 ký tự !',
+            // 'username.max' => 'Tên tài khoản tối đa 20 ký tự !',
 
             'display_name.required' => 'Tên hiển thị không được để trống !',
             'display_name.regex' => 'Tên hiển thị chỉ bao gồm chữ !',
@@ -65,7 +64,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'username' => $request->username,
+            // 'username' => $request->username,
             'display_name' => $request->display_name,
             'email' => $request->email,
             'password' => Hash::make($request->input('password')),
@@ -79,8 +78,8 @@ class RegisteredUserController extends Controller
 
         return response()->json([
             'message' => 'Tạo tài khoản thành công !',
-            'email' => $user->email,
-            'token' => $user->createToken($user->user_id)->plainTextToken,
+            'user' => $user,
+            'token' => $user->createToken($user->display_name)->plainTextToken,
         ]);
 
     }

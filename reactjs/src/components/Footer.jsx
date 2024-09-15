@@ -1,18 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faNewspaper,
   faUser,
 } from "@fortawesome/free-regular-svg-icons";
-import {
-  faHome,
-  faSearch,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHome, faSearch } from "@fortawesome/free-solid-svg-icons";
 
-const NavBar = () => {
-  const [components, setComponents] = useState(false);
+const Footer = () => {
+  // const [components, setComponents] = useState(false);
   const Components = [
     {
       icon: (
@@ -43,23 +40,26 @@ const NavBar = () => {
 
   return (
     <>
-      <div className="flex shadow-sm rounded-md z-10 border-black border-t bg-white px-7 py-5 mx-auto w-full lg:hidden md:hidden fixed bottom-0">
-          <ul className="list-none flex w-full flex-row justify-between">
-            {Components.map((item, index) => (
-              <li key={index}>
-                <Link
-                  to={item.link}
-                  className="text-slate-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 
-                    ease-out duration-700"
-                >
-                  {item.icon}
-                </Link>
-              </li>
-            ))}
-          </ul>
+      <div className="flex shadow-sm z-10 border-black border-t bg-white h-20 w-full lg:hidden md:hidden fixed bottom-0">
+        <ul className="list-none flex w-full flex-row justify-between h-full items-center">
+          {Components.map((item, index) => (
+            <li className="flex h-full" key={index}>
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  isActive
+                    ? "bg-gray-300 items-center justify-center flex w-24 h-full text-slate-600 font-light tracking-wider ease-out duration-700"
+                    : "items-center flex justify-center w-24 text-slate-600 font-light tracking-wider hover:bg-gray-300 ease-out duration-700"
+                }
+              >
+                {item.icon}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </div>
     </>
   );
 };
 
-export default NavBar;
+export default Footer;

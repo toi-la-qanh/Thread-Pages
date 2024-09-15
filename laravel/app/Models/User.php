@@ -5,7 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+// use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -25,7 +25,7 @@ class User extends Authenticatable
      *
      * @var bool
      */
-    public $incrementing = false; // Set to true if `user_id` is auto-incrementing
+    public $incrementing = true; // Set to true if `user_id` is auto-incrementing
 
     /**
      * The type of the auto-incrementing ID.
@@ -44,6 +44,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'profile_image',
     ];
 
     /**
@@ -80,6 +81,20 @@ class User extends Authenticatable
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comments::class);
+        return $this->hasMany(Comment::class);
+    }
+    /**
+     * One user can have many likes.
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+    /**
+     * One user can have many retweets.
+     */
+    public function retweets(): HasMany
+    {
+        return $this->hasMany(Retweet::class);
     }
 }

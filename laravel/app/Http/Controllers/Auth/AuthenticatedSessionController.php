@@ -25,14 +25,15 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
 
         // Check if the user already has an active token
-        $token = $user->tokens()->where('name', 'Default')->first();
+        $token = $user->tokens()->where('name', $user->display_name)->first();
 
         if (!$token) {
             // Create a new token if none exists
-            $token = $user->createToken('Default')->plainTextToken;
+            $token = $user->createToken($user->display_name)->plainTextToken;
         }
 
         return response()->json([
+            'user' => $user,
             'message' => 'Người dùng ' . $user->display_name . ' đăng nhập thành công !',
             'token' => $token,
         ]);
@@ -49,15 +50,10 @@ class AuthenticatedSessionController extends Controller
         if (!$user) {
             return response()->json([
                 'message' => 'Không có người dùng nào để đăng xuất !',
-            ], 401); 
+            ], 401);
         }
 
-        // Revoke the current user's token if using Laravel Sanctum or Passport
-        if (method_exists($user, 'tokens')) {
-            // Optionally, you can revoke all tokens or a specific token
-            $user->tokens()->delete(); // Revoke all tokens
-            // $user->tokens()->where('name', 'Default')->delete(); // Optionally revoke a specific token
-        }
+        $user->tokens()->delete();
 
         Auth::guard('web')->logout();
 

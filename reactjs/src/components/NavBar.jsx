@@ -15,7 +15,7 @@ const NavBar = () => {
     {
       icon: (
         <FontAwesomeIcon
-          className="px-1 text-3xl focus:border-b"
+          className="px-1 text-xl"
           icon={faHome}
         />
       ),
@@ -63,7 +63,7 @@ const NavBar = () => {
                   to={item.link}
                   className={({ isActive }) =>
                     isActive
-                      ? "border-b-2 border-black text-gray-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
+                      ? "p-2 border-b-2 border-black text-gray-600 text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
                       : "text-black text-[1.15rem] font-light tracking-wider hover:text-gray-400 ease-out duration-700"
                   }
                 >
