@@ -35,20 +35,20 @@ class Like extends Model
      */
     public function posts(): BelongsTo
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Post::class, 'post_id');
     }
     /**
      * Get the post that owns the like.
      */
     public function users(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
     /**
      * Get the comment that owns the like.
      */
     public function comments(): BelongsTo
     {
-        return $this->belongsTo(Comment::class);
+        return $this->belongsTo(Comment::class, 'comment_id');
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
@@ -78,7 +79,16 @@ class PostController extends Controller
                 'comments' => function ($query) {
                     $query->whereNull('parent_id')
                         ->with('users')
-                        ->withCount('likes');
+                        ->withCount('children')
+                        ->withCount('likes')
+                        ->with([
+                            'children' => function ($query) {
+                                $query->take(2)
+                                    ->with('users')
+                                    ->withCount('children')
+                                    ->withCount('likes');
+                            }
+                        ]);
                 }
             ])
             ->first();
@@ -88,6 +98,11 @@ class PostController extends Controller
                 'message' => 'Không tìm thấy bài viết !'
             ], 404);
         }
+
+        DB::table('posts')
+            ->where('post_id', $id)
+            ->increment('clicks', 1);
+
         return response()->json($post);
     }
 
@@ -102,11 +117,14 @@ class PostController extends Controller
                 'message' => 'Bài viết không tồn tại !'
             ], 404);
         }
-        if ($post->user_id !== auth()->id()) {
+
+        $user = $request->user();
+        if ($post->user_id !== $user->user_id) {
             return response()->json([
                 'message' => 'Bạn không có quyền chỉnh sửa bài viết này vì bài viết này không thuộc về bạn!'
             ], 403);
         }
+
         $request->validate([
             'title' => ['nullable', 'min:20', 'max:150'],
             'content' => ['nullable', 'min:50', 'max:1000'],
@@ -129,15 +147,19 @@ class PostController extends Controller
             $imagePath = $request->file('image')->store('post_images', 'public');
         }
 
-        $post->update([
+        $updatePost = Post::where('post_id', $id)
+            ->where('user_id', $user->user_id)
+            ->first();
+
+        $updatePost->update([
             'title' => $request->input('title', $post->title),
             'content' => $request->input('content', $post->content),
             'image' => $imagePath,
         ]);
 
         return response()->json([
-            'message' => 'Bài viết ' . $post->title . ' đã được cập nhật !',
-            'post' => $post
+            'message' => 'Bài viết ' . $updatePost->title . ' đã được cập nhật !',
+            'post' => $updatePost
         ], 200);
     }
 

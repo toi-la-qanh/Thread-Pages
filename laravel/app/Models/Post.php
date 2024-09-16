@@ -51,20 +51,20 @@ class Post extends Model
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'post_id');
     }
     /**
      * One post can have many likes.
      */
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        return $this->hasMany(Like::class, 'post_id');
     }
     /**
      * One post can have many retweets.
      */
     public function retweets(): HasMany
     {
-        return $this->hasMany(Retweet::class);
+        return $this->hasMany(Retweet::class, 'post_id');
     }
 }

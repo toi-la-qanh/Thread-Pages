@@ -13,6 +13,8 @@ use App\Http\Controllers\RetweetController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Route for Posts
+
 Route::get('/post', [PostController::class, 'index']);
 
 Route::get('/post/{id}', [PostController::class, 'show']);
@@ -29,29 +31,53 @@ Route::post('/post', [PostController::class, 'store'])
     ->middleware(['auth'])
     ->name('storePost');
 
+// Route for Likes
+
 Route::post('/post/{id}/like', [LikeController::class, 'storeLikeOnPost'])
     ->middleware(['auth'])
     ->name('storeLikeOnPost');
+
+Route::post(
+    '/post/{postID}/comment/{commentID}/like',
+    [LikeController::class, 'storeLikeOnComment']
+)
+    ->middleware(['auth'])
+    ->name('storeLikeOnComment');
+
+//Route for Comments
 
 Route::post('/post/{id}/comment', [CommentController::class, 'storeCommentOnPost'])
     ->middleware(['auth'])
     ->name('storeCommentOnPost');
 
+Route::get('/post/{postID}/comment/{commentID}', [CommentController::class, 'show'])
+    ->name('showCommentOfComment');
+
+Route::post(
+    '/post/{postID}/comment/{commentID}/comment',
+    [CommentController::class, 'storeCommentOnComment']
+)
+    ->middleware(['auth'])
+    ->name('storeCommentOnComment');
+
+Route::patch(
+    '/post/{postID}/comment/{commentID}',
+    [CommentController::class, 'update']
+)
+    ->middleware(['auth'])
+    ->name('updateComment');
+
+Route::delete('/post/{postID}/comment/{commentID}', [CommentController::class, 'destroy'])
+    ->middleware(['auth'])
+    ->name('deleteComment');
+
+//Route for Retweets
+
 Route::post('/post/{id}/retweet', [RetweetController::class, 'store'])
     ->middleware(['auth'])
     ->name('storeRetweet');
 
-Route::post('/post/{id}/comment/{id}', [CommentController::class, 'show'])
-    ->middleware(['auth'])
-    ->name('showCommentOfComment');
-
-Route::post('/post/{id}/comment/{id}/like', [LikeController::class, 'storeLikeOnComment'])
-    ->middleware(['auth'])
-    ->name('storeLikeOnComment');
-
-Route::post('/post/{id}/comment/{id}/comment', [CommentController::class, 'storeCommentOnComment'])
-    ->middleware(['auth'])
-    ->name('storeCommentOnComment');
+// Route for user
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
     // ->middleware(['guest', 'auth:sanctum'])

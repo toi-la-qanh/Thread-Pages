@@ -36,14 +36,14 @@ class Comment extends Model
      */
     public function posts(): BelongsTo
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Post::class, 'post_id');
     }
     /**
      * Get the user that owns the comment.
      */
     public function users(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
     /**
      * Get the parent of comment.
@@ -64,6 +64,6 @@ class Comment extends Model
      */
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        return $this->hasMany(Like::class, 'comment_id');
     }
 }
