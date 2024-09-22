@@ -10,6 +10,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RetweetController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,10 @@ Route::post('/post/{id}/like', [LikeController::class, 'storeLikeOnPost'])
     ->middleware(['auth'])
     ->name('storeLikeOnPost');
 
+Route::delete('/post/{id}/like', [LikeController::class, 'destroyLikeOnPost'])
+    ->middleware(['auth'])
+    ->name('destroyLikeOnPost');
+
 Route::post(
     '/post/{postID}/comment/{commentID}/like',
     [LikeController::class, 'storeLikeOnComment']
@@ -44,14 +49,21 @@ Route::post(
     ->middleware(['auth'])
     ->name('storeLikeOnComment');
 
+Route::delete(
+    '/post/{postID}/comment/{commentID}/like',
+    [LikeController::class, 'destroyLikeOnComment']
+)
+    ->middleware(['auth'])
+    ->name('destroyLikeOnComment');
+
 //Route for Comments
+
+Route::get('/post/{postID}/comment/{commentID}', [CommentController::class, 'show'])
+    ->name('showCommentOfComment');
 
 Route::post('/post/{id}/comment', [CommentController::class, 'storeCommentOnPost'])
     ->middleware(['auth'])
     ->name('storeCommentOnPost');
-
-Route::get('/post/{postID}/comment/{commentID}', [CommentController::class, 'show'])
-    ->name('showCommentOfComment');
 
 Route::post(
     '/post/{postID}/comment/{commentID}/comment',
@@ -110,3 +122,9 @@ Route::patch('/user/{id}', [UserController::class, 'update'])
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('logout');
+
+Route::get('/user/{id}', [UserController::class, 'show'])
+    ->name('showProfile');
+
+Route::get('/search/{input}', [SearchController::class, 'search'])
+    ->name('search');

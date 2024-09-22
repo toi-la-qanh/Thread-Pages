@@ -6,10 +6,12 @@ import {
   faNewspaper,
   faUser,
 } from "@fortawesome/free-regular-svg-icons";
-import { faHome, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faPlus, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../contexts/AuthContext";
 
 const Footer = () => {
   // const [components, setComponents] = useState(false);
+  const { user } = useAuth();
   const Components = [
     {
       icon: (
@@ -25,8 +27,8 @@ const Footer = () => {
       link: "/search",
     },
     {
-      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faNewspaper} />,
-      link: "/post",
+      icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faPlus} />,
+      link: "/create-post",
     },
     {
       icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faHeart} />,
@@ -34,7 +36,7 @@ const Footer = () => {
     },
     {
       icon: <FontAwesomeIcon className="px-1 text-3xl" icon={faUser} />,
-      link: "/profile",
+      link: `/profile/${user.user_id}`,
     },
   ];
 

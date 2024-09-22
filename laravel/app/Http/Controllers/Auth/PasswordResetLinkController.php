@@ -18,7 +18,11 @@ class PasswordResetLinkController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'email:rfc,strict,dns', 'exists:users, email'],
+        ],[
+            'email.required' => 'Email không được bỏ trống !',
+            'email.email' => 'Email không hợp lệ !',
+            'email.exists' => 'Email không tồn tại trong dữ liệu của chúng tôi !'
         ]);
 
         // We will send the password reset link to this user. Once we have attempted

@@ -4,19 +4,39 @@ import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import Register from "./Register";
 
-const Login = () => {
+const Login = ({ isOpen }) => {
   const { login, errors } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [register, setRegister] = useState(false);
+
+  const openRegister = () => {
+    isOpen = false;
+    setRegister(true);
+  };
+
+  if (register) {
+    return <Register openRegister={register} />;
+  }
+
+  if (!isOpen) {
+    return null;
+  }
 
   const validateFormInput = async (event) => {
     event.preventDefault();
-    await login({email, password});
+    await login({ email, password });
   };
+
   return (
-    <div className="flex text-black w-full flex-col justify-center items-center">
-      <div className="overflow-auto h-auto rounded-xl border-black border lg:w-1/3 p-5 md:w-1/2 sm:w-2/3 w-full">
+    <div
+      className={`${
+        isOpen ? "flex" : "hidden"
+      } transition-colors duration-700 mt-10 bg-white text-black w-full flex-col justify-center items-center`}
+    >
+      <div className="p-5 overflow-auto rounded-xl border-black border w-[500px]">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl font-bold">
             Đăng nhập tài khoản của bạn
@@ -87,12 +107,12 @@ const Login = () => {
 
           <p className="flex justify-between mt-10 text-sm text-gray-500">
             Chưa có tài khoản?
-            <Link
-              to="/register"
+            <button
+              onClick={openRegister}
               className="font-semibold text-sky-600 hover:text-sky-500"
             >
               Đăng ký ngay
-            </Link>
+            </button>
           </p>
         </div>
       </div>

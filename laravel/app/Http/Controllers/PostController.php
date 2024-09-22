@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Notifications\PostCreated;
 use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
@@ -51,13 +52,19 @@ class PostController extends Controller
             $imagePath = $request->file('image')->store('post_images', 'public'); // Store in 'storage/app/public/post_images'
         }
 
+        $user = $request->user();
         // Create a new post and associate it with the authenticated user
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->input("content"),
             'image' => $imagePath,
-            'user_id' => auth()->id(), // Assuming you're using user authentication
+            'user_id' => $user->user_id, // Assuming you're using user authentication
         ]);
+
+        // Notify all followers
+        foreach ($user->followers as $follower) {
+            $follower->notify(new PostCreated($post, $user));
+        }
 
         return response()->json([
             'message' => 'Tạo bài viết thành công !',

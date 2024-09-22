@@ -1,17 +1,21 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { RenderRoutes } from "../components/RenderRoutes";
 
 const AuthContext = createContext({
-  // user: null,
-  // setUser: () => {},
+  // token: null,
+  // errors: [],
+  // checkToken: () => {},
   // login: () => {},
   // register: () => {},
+  // logout: () => {},
 });
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = () => {
   const [errors, setErrors] = useState([]);
   const [token, setToken] = useState(null);
+  const [user, setUser] = useState([]);
   const navigate = useNavigate();
 
   // csrf token generation for guest methods
@@ -23,6 +27,20 @@ export const AuthProvider = ({ children }) => {
       withCredentials: true,
       // withXSRFToken:true,
     });
+
+  const getUser = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/user", {
+        headers: {
+          Accept: "application/json",
+        },
+        withCredentials: true,
+      });
+      setUser(response.data);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
 
   const checkToken = () => {
     const storedToken = localStorage.getItem("token");
@@ -99,7 +117,11 @@ export const AuthProvider = ({ children }) => {
       );
       console.log(result);
       localStorage.setItem("token", JSON.stringify(result.data.token));
-      navigate("/");
+      if (checkToken()) {
+        navigate("/");
+      } else {
+        console.log("Cant get token !");
+      }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 422) {
@@ -125,13 +147,14 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkToken();
+    getUser();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ token, errors, checkToken, login, register }}
+      value={{ token, user, errors, csrfToken, checkToken, login, register }}
     >
-      {children}
+      <RenderRoutes />
     </AuthContext.Provider>
   );
 };

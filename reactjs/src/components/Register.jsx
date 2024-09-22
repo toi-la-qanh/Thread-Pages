@@ -4,22 +4,35 @@ import { useAuth } from "../contexts/AuthContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import Login from "./Login";
 
-const Register = () => {
+const Register = ({ openRegister }) => {
   const { register, errors } = useAuth();
   const [display_name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [password_confirmation, setPasswordConfirm] = useState("");
+  const [login, setLogin] = useState(false);
 
   const validateFormInput = async (event) => {
     event.preventDefault();
-    await register({display_name, email, password, password_confirmation});
+    await register({ display_name, email, password, password_confirmation });
   };
 
+  const openLogin = () => {
+    setLogin(true);
+    openRegister = false;
+  };
+  if (login) return <Login isOpen={login} />;
+  if (!openRegister) return null;
+
   return (
-    <div className="flex text-black w-full flex-col justify-center items-center">
-      <div className="rounded-xl border-black border lg:w-1/3 p-5 md:w-1/2 sm:w-2/3 w-full">
+    <div
+      className={`${
+        openRegister ? "flex" : "hidden"
+      } mt-10 bg-white overflow-auto max-h-[500px] text-black w-full flex-col justify-center items-center`}
+    >
+      <div className="rounded-xl border-black border w-[500px] py-5 overflow-auto h-full">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="text-center text-2xl font-bold">Đăng ký tài khoản</h2>
         </div>
@@ -110,12 +123,12 @@ const Register = () => {
 
           <p className="flex justify-between mt-10 text-sm text-gray-500">
             Đã có tài khoản?
-            <Link
-              to="/login"
+            <button
+              onClick={openLogin}
               className="font-semibold text-sky-600 hover:text-sky-500"
             >
               Đăng nhập ngay
-            </Link>
+            </button>
           </p>
         </div>
       </div>

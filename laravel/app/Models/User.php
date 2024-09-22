@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, Notifiable;
     /**
      * The primary key associated with the table.
      *
@@ -74,27 +74,34 @@ class User extends Authenticatable
      */
     public function posts(): HasMany
     {
-        return $this->hasMany(Post::class);
+        return $this->hasMany(Post::class, 'user_id');
     }
     /**
      * One user can have many comments.
      */
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Comment::class, 'user_id');
     }
     /**
      * One user can have many likes.
      */
     public function likes(): HasMany
     {
-        return $this->hasMany(Like::class);
+        return $this->hasMany(Like::class, 'user_id');
     }
     /**
      * One user can have many retweets.
      */
     public function retweets(): HasMany
     {
-        return $this->hasMany(Retweet::class);
+        return $this->hasMany(Retweet::class, 'user_id');
+    }
+    /**
+     * One user can have many followers.
+     */
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follower::class, 'user_id');
     }
 }

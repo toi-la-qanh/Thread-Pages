@@ -4,8 +4,6 @@ const Home = () => {
   return (
     <>
         <Post/>
-      {/* </div>
-    </div> */}
     </>
   )
 }

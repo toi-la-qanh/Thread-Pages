@@ -9,6 +9,47 @@ use Illuminate\Http\JsonResponse;
 class UserController extends Controller
 {
     /**
+     * Display the specified resource.
+     */
+    public function show(string $id): JsonResponse
+    {
+        $checkIfUserExists = User::find($id);
+        if (!$checkIfUserExists) {
+            return response()->json([
+                'message' => 'Không tìm thấy người dùng này !'
+            ], 404);
+        }
+
+        $profile = User::with([
+            'posts' => function ($query) {
+                $query
+                    ->withCount(['likes', 'comments', 'retweets'])
+                    ->with('users');
+            },
+            'likes.posts' => function ($query) {
+                $query
+                    ->withCount(['likes', 'comments', 'retweets'])
+                    ->with('users');
+            },
+            'comments' => function ($query) {
+                $query
+                    ->withCount(['likes', 'children'])
+                    ->with('users');
+            },
+            'retweets.posts' => function ($query) {
+                $query
+                    ->withCount(['likes', 'comments', 'retweets'])
+                    ->with('users');
+            },
+            'followers.users',
+        ])
+            ->withCount('followers')
+            ->where('user_id', $id)
+            ->first();
+        return response()->json($profile);
+    }
+
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id): JsonResponse

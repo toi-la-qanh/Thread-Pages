@@ -25,24 +25,69 @@ class LikeController extends Controller
         if (!$user) {
             return response()->json(["message" => "Không tìm thấy người dùng"], 401);
         }
-        $like = Like::where("post_id", $post->post_id)
-            ->where("user_id", $user->user_id)
-            ->first();
-        if ($like) {
-            $like->delete();
-            return response()->json(["message" => "Bạn đã huỷ thích bài viết !"]);
-        } else {
-            $newLike = Like::create([
-                "post_id" => $post->post_id,
-                "user_id" => $user->user_id
-            ]);
-            return response()->json([
-                "message" => "Thả cảm xúc vào bài viết thành công !",
-                'like' => $newLike
-            ]);
-        }
+        $like = Like::create([
+            "post_id" => $post->post_id,
+            "user_id" => $user->user_id
+        ]);
+        return response()->json([
+            "message" => "Thả cảm xúc vào bài viết thành công !",
+            'like' => $like
+        ]);
+
     }
     public function storeLikeOnComment(Request $request, string $postID, string $commentID): JsonResponse
+    {
+        $post = Post::find($postID);
+        if (!$post) {
+            return response()->json([
+                'message' => 'Bài viết không tồn tại !'
+            ], 404);
+        }
+        $comment = Comment::find($commentID);
+        if (!$comment) {
+            return response()->json([
+                'message' => 'Bình luận không tồn tại !'
+            ], 404);
+        }
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(["message" => "Không tìm thấy người dùng"], 401);
+        }
+        $like = Like::create([
+            "comment_id" => $comment->comment_id,
+            "user_id" => $user->user_id
+        ]);
+        return response()->json([
+            "message" => "Thả cảm xúc vào bình luận thành công !",
+            'like' => $like
+        ]);
+    }
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroyLikeOnPost(Request $request, string $id): JsonResponse
+    {
+        $post = Post::find($id);
+        if (!$post) {
+            return response()->json([
+                'message' => 'Bài viết không tồn tại !'
+            ], 404);
+        }
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(["message" => "Không tìm thấy người dùng"], 401);
+        }
+
+        $like = Like::where('post_id', $post->post_id)
+            ->where('user_id', $user->user_id);
+
+        $like->delete();
+
+        return response()->json([
+            "message" => "Bạn đã huỷ thích bài viết !",
+        ]);
+    }
+    public function destroyLikeOnComment(Request $request, string $postID, string $commentID): JsonResponse
     {
         $post = Post::find($postID);
         if (!$post) {
@@ -63,18 +108,7 @@ class LikeController extends Controller
         $like = Like::where("comment_id", $comment->comment_id)
             ->where("user_id", $user->user_id)
             ->first();
-        if ($like) {
-            $like->delete();
-            return response()->json(["message" => "Bạn đã huỷ thích bình luận !"]);
-        } else {
-            $newLike = Like::create([
-                "comment_id" => $comment->comment_id,
-                "user_id" => $user->user_id
-            ]);
-            return response()->json([
-                "message" => "Thả cảm xúc vào bình luận thành công !",
-                'like' => $newLike
-            ]);
-        }
+        $like->delete();
+        return response()->json(["message" => "Bạn đã huỷ thích bình luận !"]);
     }
 }

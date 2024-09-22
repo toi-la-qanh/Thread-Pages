@@ -23,8 +23,25 @@ class NewPasswordController extends Controller
     {
         $request->validate([
             'token' => ['required'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['required', 'email:rfc,strict,dns', 'exists:users, email'],
+            'password' => [
+                'required'
+                ,
+                'min:8'
+                ,
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
+            ],
+            'password_confirmation' => ['same:password'],
+        ],[
+            'email.required' => 'Email không được bỏ trống !',
+            'email.email' => 'Email không hợp lệ !',
+            'email.exists' => 'Email không tồn tại trong dữ liệu của chúng tôi !',
+
+            'password.required' => 'Mật khẩu không được để trống !',
+            'password.min' => 'Mật khẩu không được dưới 8 ký tự !',
+            'password.regex' => 'Mật khẩu phải bao gồm ít nhất 1 ký tự viết hoa, 1 ký tự thường và 1 ký tự đặc biệt',
+            
+            'password_confirmation.same' => 'Mật khẩu nhập lại không trùng khớp !'
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
