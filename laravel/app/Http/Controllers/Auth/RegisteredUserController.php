@@ -22,7 +22,6 @@ class RegisteredUserController extends Controller
         // $request->merge(['email' => strtolower($request->input('email'))]);
 
         $request->validate([
-            // 'username' => ['required', 'string', 'regex:/^[A-Za-z][A-Za-z0-9]*$/', 'min:5', 'max:20'],
             'display_name' => ['required', 'string', 'regex:/^[\p{L}\sà-ỹÀ-Ỵ]+$/u', 'min:6', 'max:30'],
             'email' => [
                 'required',
@@ -40,11 +39,7 @@ class RegisteredUserController extends Controller
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/'
             ],
             'password_confirmation' => ['same:password'],
-        ], [
-            // 'username.required' => 'Tên tài khoản không được để trống !',
-            // 'username.regex' => 'Tên tài khoản phải bắt đầu là chữ !',
-            // 'username.min' => 'Tên tài khoản tối thiểu 5 ký tự !',
-            // 'username.max' => 'Tên tài khoản tối đa 20 ký tự !',
+        ], [ // you may need this brackets to show error messages to user.
 
             'display_name.required' => 'Tên hiển thị không được để trống !',
             'display_name.regex' => 'Tên hiển thị chỉ bao gồm chữ !',

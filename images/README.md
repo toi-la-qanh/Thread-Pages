@@ -1,0 +1,1 @@
+This folder is storing images to display for global `README.md` file.

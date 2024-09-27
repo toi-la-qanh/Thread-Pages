@@ -10,37 +10,36 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 
 const Search = () => {
-  const [input, setInput] = useState([]);
+  const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
   const [comments, setComments] = useState([]);
   const [active, setActive] = useState("posts");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const fetchResults = async () => {
     if (input) {
-      const fetchResults = async (input) => {
-        const response = await axios.get(
-          `http://localhost:8000/api/search/${input}`
-        );
+      const response = await axios.get(
+        `http://localhost:8000/api/search/${input}`
+      );
+      if (response) {
         setLoading(false);
         setPosts(response.data.posts);
         setUsers(response.data.users);
         setComments(response.data.comments);
-      };
-      fetchResults();
-    } else {
-      setLoading(true);
-      setPosts([]);
-      setUsers([]);
-      setComments([]);
+      } else {
+        setLoading(true);
+      }
     }
-  }, );
+  };
+  useEffect(() => {
+    fetchResults();
+  });
   const showPosts = () => setActive("posts");
   const showUsers = () => setActive("users");
   const showComments = () => setActive("comments");
 
-  if (loading) return <div className="text-center mt-5 h-screen">Chờ chút nhé ...</div>;
+  if (loading)
+    return <div className="text-center mt-5 h-screen">Chờ chút nhé ...</div>;
 
   return (
     <>

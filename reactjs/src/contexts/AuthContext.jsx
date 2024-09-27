@@ -25,7 +25,6 @@ export const AuthProvider = () => {
         Accept: "application/json",
       },
       withCredentials: true,
-      // withXSRFToken:true,
     });
 
   const getUser = async () => {
