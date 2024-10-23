@@ -15,6 +15,7 @@
 2. Make sure you have all of the input values needed for the function:
 
 `const login = async ({ email, password }) => {} `
+
 _You will meet 419 error if you dont send email or password value to login function_
 
 3. Always `await csrfToken();` and have `withXSRFToken: true` :

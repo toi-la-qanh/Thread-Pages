@@ -39,7 +39,7 @@ const Post = () => {
   };
   useEffect(() => {
     fetchPosts();
-    handleLike();
+    // handleLike();
   }, []);
 
   if (loading)

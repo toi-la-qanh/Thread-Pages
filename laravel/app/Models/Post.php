@@ -34,10 +34,7 @@ class Post extends Model
         'title',
         'content',
         'user_id',
-        'like_id',
         'image',
-        'comment_id',
-        'retweet_id'
     ];
     /**
      * Get the user who owns the post.
