@@ -15,6 +15,7 @@
         "APP_DEBUG": "true",
         "APP_URL": "https://thread-laravel.vercel.app",
         "APP_KEY": "base64:8iWtJYBu1+gIroCUp9vycHgC0Xv7IqdcNfe/XC9+h2Y=",
+        "FRONTEND_URL":"https://thread-reactjs.vercel.app",
 
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
