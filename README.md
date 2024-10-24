@@ -11,7 +11,9 @@
 ## Deploy
 
 Laravel: https://thread-laravel.vercel.app
+
 ReactJS: https://thread-reactjs.vercel.app
+
 PostgreSQL: railway
 
 ## Cloning project
