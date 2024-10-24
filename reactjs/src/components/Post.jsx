@@ -28,7 +28,7 @@ const Post = () => {
   };
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/post");
+      const response = await axios.get("https://thread-laravel.vercel.app/api/post");
       console.log(response);
       setPosts(response.data);
       setLoading(false);
