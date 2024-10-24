@@ -10,7 +10,16 @@ use Illuminate\Http\JsonResponse;
 class RetweetController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Show the number of retweets on the specified post.
+     */
+    public function show(string $id): JsonResponse
+    {
+        $retweets = Retweet::where('post_id', $id)->count();
+
+        return response()->json($retweets);
+    }
+    /**
+     * Retweet a post.
      */
     public function store(Request $request, string $id): JsonResponse
     {

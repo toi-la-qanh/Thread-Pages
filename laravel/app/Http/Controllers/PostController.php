@@ -11,25 +11,21 @@ use Illuminate\Support\Facades\DB;
 class PostController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the posts.
      */
     public function index(): JsonResponse
     {
-        $posts = Post::with('users')
-
-            ->withCount("likes")
-
-            ->withCount("comments")
-
-            ->withCount("retweets")
-
-            ->get();
+        $posts = Post::with([
+            'users' => function ($query) {
+                $query->select('user_id', 'display_name', 'profile_image');
+            }
+        ])->get();
 
         return response()->json($posts);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new post.
      */
     public function store(Request $request): JsonResponse
     {
@@ -53,12 +49,12 @@ class PostController extends Controller
         }
 
         $user = $request->user();
-        // Create a new post and associate it with the authenticated user
+        
         $post = Post::create([
             'title' => $request->title,
             'content' => $request->input("content"),
             'image' => $imagePath,
-            'user_id' => $user->user_id, // Assuming you're using user authentication
+            'user_id' => $user->user_id,
         ]);
 
         // Notify all followers
@@ -73,32 +69,17 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified post.
      */
     public function show(string $id): JsonResponse
     {
         $post = Post::where('post_id', $id)
-            ->with('users')
-            ->withCount('likes')
-            ->withCount('comments')
-            ->withCount('retweets')
             ->with([
-                'comments' => function ($query) {
-                    $query->whereNull('parent_id')
-                        ->with('users')
-                        ->withCount('children')
-                        ->withCount('likes')
-                        ->with([
-                            'children' => function ($query) {
-                                $query->take(2)
-                                    ->with('users')
-                                    ->withCount('children')
-                                    ->withCount('likes');
-                            }
-                        ]);
+                'users' => function ($query) {
+                    $query->select('user_id', 'display_name', 'profile_image');
                 }
             ])
-            ->first();
+            ->get();
 
         if (!$post) {
             return response()->json([
@@ -114,7 +95,7 @@ class PostController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified post.
      */
     public function update(Request $request, string $id): JsonResponse
     {
@@ -171,7 +152,7 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified post.
      */
     public function destroy(string $id): JsonResponse
     {

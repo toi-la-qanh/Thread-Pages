@@ -11,86 +11,55 @@ use Illuminate\Http\JsonResponse;
 class SearchController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Search posts.
      */
-    public function index()
-    {
-        //
-    }
-
-    public function search(string $input): JsonResponse
+    public function searchPosts(string $input): JsonResponse
     {
         // Search posts
         $posts = Post::where('title', 'like', "%{$input}%")
             ->orWhere('content', 'like', "%{$input}%")
-            ->with('users')
-            ->withCount(['comments', 'likes', 'retweets'])
+            ->with([
+                'users' => function ($query) {
+                    $query->select('user_id', 'display_name', 'profile_image');
+                }
+            ])
             ->get();
 
+        return response()->json([
+            'posts' => $posts,
+        ]);
+    }
+    /**
+     * Search users.
+     */
+    public function searchUsers(string $input): JsonResponse
+    {
         // Search users
         $users = User::where('display_name', 'like', "%{$input}%")
             ->orWhere('username', 'like', "%{$input}%")
             ->orWhere('email', 'like', "%{$input}%")
             ->get();
 
+        return response()->json([
+            'users' => $users,
+        ]);
+    }
+    /**
+     * Search comments.
+     */
+    public function searchComments(string $input): JsonResponse
+    {
         // Search comments
         $comments = Comment::where('content', 'like', "%{$input}%")
-            ->with('users')
-            ->withCount(['children', 'likes'])
+            ->with([
+                'users' => function ($query) {
+                    $query->select('user_id', 'display_name', 'profile_image');
+                }
+            ])
             ->get();
 
         return response()->json([
-            'posts' => $posts,
-            'users' => $users,
             'comments' => $comments,
         ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 }

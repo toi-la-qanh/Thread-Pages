@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Like;
+use App\Models\Post;
 use App\Models\User;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends Controller
 {
     /**
-     * Display the specified resource.
+     * Display the profile of a user.
      */
-    public function show(string $id): JsonResponse
+    public function showProfile(string $id): JsonResponse
     {
         $checkIfUserExists = User::find($id);
         if (!$checkIfUserExists) {
@@ -20,37 +23,66 @@ class UserController extends Controller
             ], 404);
         }
 
-        $profile = User::with([
-            'posts' => function ($query) {
-                $query
-                    ->withCount(['likes', 'comments', 'retweets'])
-                    ->with('users');
-            },
-            'likes.posts' => function ($query) {
-                $query
-                    ->withCount(['likes', 'comments', 'retweets'])
-                    ->with('users');
-            },
-            'comments' => function ($query) {
-                $query
-                    ->withCount(['likes', 'children'])
-                    ->with('users');
-            },
-            'retweets.posts' => function ($query) {
-                $query
-                    ->withCount(['likes', 'comments', 'retweets'])
-                    ->with('users');
-            },
-            'followers.users',
-        ])
-            ->withCount('followers')
-            ->where('user_id', $id)
-            ->first();
-        return response()->json($profile);
+        $user = User::where('user_id', $id)->first();
+
+        return response()->json($user);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Display the post which is owned by a user.
+     */
+    public function showPostOwnedByUser(string $id): JsonResponse
+    {
+        $checkIfUserExists = User::find($id);
+        if (!$checkIfUserExists) {
+            return response()->json([
+                'message' => 'Không tìm thấy người dùng này !'
+            ], 404);
+        }
+
+        $post = Post::where('user_id', $id)->first();
+
+        return response()->json($post);
+    }
+
+    /**
+     * Display the post which is liked by a user.
+    */
+    public function showLikedPostOfUser(string $id): JsonResponse
+    {
+        $checkIfUserExists = User::find($id);
+        if (!$checkIfUserExists) {
+            return response()->json([
+                'message' => 'Không tìm thấy người dùng này !'
+            ], 404);
+        }
+
+        $like = Like::where('user_id',$id)->get();
+
+        $post = Post::where('post_id', $like->like_id)->get();
+
+        return response()->json($post);
+    }
+
+    /**
+     * Display the comment which is owned by a user.
+    */
+    public function showCommentOfUser(string $id): JsonResponse
+    {
+        $checkIfUserExists = User::find($id);
+        if (!$checkIfUserExists) {
+            return response()->json([
+                'message' => 'Không tìm thấy người dùng này !'
+            ], 404);
+        }
+
+        $comment = Comment::where('user_id',$id)->get();
+
+        return response()->json($comment);
+    }
+
+    /**
+     * Change the user profile.
      */
     public function update(Request $request, string $id): JsonResponse
     {

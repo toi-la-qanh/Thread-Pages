@@ -20,6 +20,10 @@ Route::get('/post', [PostController::class, 'index']);
 
 Route::get('/post/{id}', [PostController::class, 'show']);
 
+Route::post('/post', [PostController::class, 'store'])
+    ->middleware(['auth'])
+    ->name('storePost');
+
 Route::patch('/post/{id}', [PostController::class, 'update'])
     ->middleware(['auth'])
     ->name('updatePost');
@@ -28,11 +32,24 @@ Route::delete('/post/{id}', [PostController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('deletePost');
 
-Route::post('/post', [PostController::class, 'store'])
-    ->middleware(['auth'])
-    ->name('storePost');
-
 // Route for Likes
+
+Route::get('/post/{id}/like', [LikeController::class, 'showLikeOnPost'])
+    ->name('showLikeOnPost');
+
+Route::get('/post/{postID}/comment/{commentID}/like', [LikeController::class, 'showLikeOnComment'])
+    ->name('showLikeOnComment');
+
+Route::get('/post/{id}/check-like', [LikeController::class, 'hasUserLikedPost'])
+    ->middleware(['auth'])
+    ->name('hasUserLikedPost');
+
+Route::get(
+    '/post/{postID}/comment/{commentID}check-like',
+    [LikeController::class, 'hasUserLikedComment']
+)
+    ->middleware(['auth'])
+    ->name('hasUserLikedComment');
 
 Route::post('/post/{id}/like', [LikeController::class, 'storeLikeOnPost'])
     ->middleware(['auth'])
@@ -60,6 +77,18 @@ Route::delete(
 
 Route::get('/post/{postID}/comment/{commentID}', [CommentController::class, 'show'])
     ->name('showCommentOfComment');
+
+Route::get(
+    '/post/{id}/count-comment',
+    [CommentController::class, 'countCommentOnPost']
+)
+    ->name('countCommentOnPost');
+
+Route::get(
+    '/post/{postID}/comment/{commentID}/count-comment',
+    [CommentController::class, 'countCommentOnComment']
+)
+    ->name('countCommentOnComment');
 
 Route::post('/post/{id}/comment', [CommentController::class, 'storeCommentOnPost'])
     ->middleware(['auth'])
@@ -126,5 +155,11 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::get('/user/{id}', [UserController::class, 'show'])
     ->name('showProfile');
 
-Route::get('/search/{input}', [SearchController::class, 'search'])
+Route::get('/search/post/{input}', [SearchController::class, 'searchPosts'])
+    ->name('search');
+    
+Route::get('/search/comment/{input}', [SearchController::class, 'searchComments'])
+    ->name('search');
+
+Route::get('/search/user/{input}', [SearchController::class, 'searchUsers'])
     ->name('search');

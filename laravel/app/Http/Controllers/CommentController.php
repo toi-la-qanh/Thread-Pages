@@ -10,7 +10,27 @@ use Illuminate\Http\JsonResponse;
 class CommentController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Show the number of comments on the specified post.
+     */
+    public function countCommentOnPost(string $id): JsonResponse
+    {
+        $comments = Comment::where('post_id', $id)->count();
+
+        return response()->json($comments);
+    }
+    /**
+     * Show the number of reply comments on the specified comment.
+     */
+    public function countCommentOnComment(string $postID, string $commentID): JsonResponse
+    {
+        $comments = Comment::where('parent_id', $commentID)
+            ->where('post_id', $postID)
+            ->count();
+
+        return response()->json($comments);
+    }
+    /**
+     * Store a new comment on the specified post.
      */
     public function storeCommentOnPost(Request $request, string $id): JsonResponse
     {
@@ -45,6 +65,9 @@ class CommentController extends Controller
             'comment' => $comment
         ]);
     }
+        /**
+     * Store a new reply comment on the specified comment.
+     */
     public function storeCommentOnComment(Request $request, string $postID, string $commentID): JsonResponse
     {
         $post = Post::find($postID);
@@ -88,7 +111,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified comment content.
      */
     public function show(string $postID, string $commentID): JsonResponse
     {
@@ -108,14 +131,9 @@ class CommentController extends Controller
 
         $showComment = Comment::where('post_id', $post->post_id)
             ->where('comment_id', $comment->comment_id)
-            ->with('users')
-            ->withCount('likes')
-            ->withCount('children')
             ->with([
-                'children' => function ($query) {
-                    $query->with('users')
-                        ->withCount('children')
-                        ->withCount('likes');
+                'users' => function ($query) {
+                    $query->select('user_id', 'display_name', 'profile_image');
                 }
             ])
             ->first();
@@ -123,7 +141,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified comment.
      */
     public function update(Request $request, string $postID, string $commentID): JsonResponse
     {
@@ -171,7 +189,7 @@ class CommentController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified comment.
      */
     public function destroy(Request $request, string $postID, string $commentID): JsonResponse
     {

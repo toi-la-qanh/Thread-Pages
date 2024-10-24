@@ -11,7 +11,53 @@ use Illuminate\Http\JsonResponse;
 class LikeController extends Controller
 {
     /**
-     * Store a newly created resource in storage.
+     * Show the number of the likes on specified post.
+     */
+    public function showLikeOnPost(string $id): JsonResponse
+    {
+        $likes = Like::where('post_id', $id)->count();
+
+        return response()->json($likes);
+    }
+    /**
+     * Show the number of the likes on specified comment.
+     */
+    public function showLikeOnComment(string $postID, string $commentID): JsonResponse
+    {
+        $likes = Like::where('comment_id', $commentID)
+            ->where('post_id', $postID)
+            ->count();
+
+        return response()->json($likes);
+    }
+    /**
+     * Check if user has liked the post.
+     */
+    public function hasUserLikedPost(Request $request, string $postID): JsonResponse
+    {
+        $user = $request->user();
+        $hasLiked = Like::where('post_id', $postID)
+            ->where('user_id', $user->user_id)
+            ->exists();
+
+        return response()->json(['has_liked' => $hasLiked]);
+    }
+    /**
+     * Check if user has liked the comment.
+     */
+    public function hasUserLikedComment(Request $request, string $postID, string $commentID): JsonResponse
+    {
+        $user = $request->user();
+        $hasLiked = Like::where('post_id', $postID)
+            ->where('comment_id', $commentID)
+            ->where('user_id', $user->user_id)
+            ->exists();
+
+        return response()->json(['has_liked' => $hasLiked]);
+    }
+
+    /**
+     * Store a like on the specified post.
      */
     public function storeLikeOnPost(Request $request, string $id): JsonResponse
     {
@@ -35,6 +81,9 @@ class LikeController extends Controller
         ]);
 
     }
+    /**
+     * Store a like on the specified comment.
+     */
     public function storeLikeOnComment(Request $request, string $postID, string $commentID): JsonResponse
     {
         $post = Post::find($postID);
@@ -63,7 +112,7 @@ class LikeController extends Controller
         ]);
     }
     /**
-     * Remove the specified resource from storage.
+     * Remove a like on the specified post.
      */
     public function destroyLikeOnPost(Request $request, string $id): JsonResponse
     {
@@ -87,6 +136,9 @@ class LikeController extends Controller
             "message" => "Bạn đã huỷ thích bài viết !",
         ]);
     }
+    /**
+     * Remove a like on the specified comment.
+     */
     public function destroyLikeOnComment(Request $request, string $postID, string $commentID): JsonResponse
     {
         $post = Post::find($postID);
