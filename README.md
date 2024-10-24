@@ -8,6 +8,12 @@
 ![ERD Diagram](./images/thread.png)
 *ERD Diagram*
 
+## Deploy
+
+Laravel: https://thread-laravel.vercel.app
+ReactJS: https://thread-reactjs.vercel.app
+PostgreSQL: railway
+
 ## Cloning project
 `git clone github.com/toi-la-qanh/Laravel.11-ReactJS`
 ### Install Laravel : 

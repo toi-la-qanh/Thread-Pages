@@ -28,6 +28,13 @@
         "SESSION_DRIVER": "cookie",
         "SESSION_DOMAIN": ".vercel.app",
 
+        "DB_CONNECTION": "pgsql",
+        "DB_HOST": "autorack.proxy.rlwy.net",
+        "DB_PORT": "34824",
+        "DB_DATABASE": "thread",
+        "DB_USERNAME": "postgres",
+        "DB_PASSWORD": "LIXEfNNHIEiumqmepmpkBsyVmaRoorel",
+
         "MAIL_MAILER": "smtp",
         "MAIL_HOST": "smtp.gmail.com",
         "MAIL_PORT": "587",
