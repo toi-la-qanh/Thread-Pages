@@ -12,7 +12,7 @@ const AuthContext = createContext({
   // logout: () => {},
 });
 
-const backendURL = "http://localhost:8000";
+const backendURL = "https://thread-laravel.vercel.app";
 
 export const AuthProvider = () => {
   const [errors, setErrors] = useState([]);
