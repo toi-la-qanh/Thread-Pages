@@ -8,27 +8,33 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { faRetweet } from "@fortawesome/free-solid-svg-icons";
 import { NavLink } from "react-router-dom";
-import { useLikePost, useLikeComment, useUnlikePost } from "./Like";
+import { useLikePost, useLikeComment } from "./Like";
 
 const Post = () => {
+  const apiURL = "https://thread-laravel.vercel.app/api/post";
+
   const [posts, setPosts] = useState([]);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState(null);
-  const likePost = useLikePost();
-  const unlikePost = useUnlikePost();
-  const [likeStatus, setLikeStatus] = useState(false);
-  const handleLike = async (id) => {
-    if (likeStatus) {
-      await unlikePost(id);
-      setLikeStatus(false);
+
+  const { likePost, unlikePost, checkLikePost, fetchLikesOfPost } =
+    useLikePost();
+
+  const [hasLiked, setHasLiked] = useState(false);
+
+  const handleLike = async (postID) => {
+    if (hasLiked) {
+      unlikePost(postID);
     } else {
-      await likePost(id);
-      setLikeStatus(true);
+      likePost(postID);
     }
   };
+
   const fetchPosts = async () => {
     try {
-      const response = await axios.get("https://thread-laravel.vercel.app/api/post");
+      const response = await axios.get(`${apiURL}`);
       console.log(response);
       setPosts(response.data);
       setLoading(false);
@@ -37,10 +43,28 @@ const Post = () => {
       setLoading(false);
     }
   };
+
+  const handleLikesFetch = async () => {
+    const updatedPosts = await Promise.all(
+      posts.map(async (post) => {
+        const likes = await fetchLikesOfPost(post.post_id);
+        return { ...post, likes };
+      })
+    );
+    setPosts(updatedPosts);
+  };
+
   useEffect(() => {
     fetchPosts();
-    // handleLike();
-  }, []);
+
+    const intervalId = setInterval(() => {
+      handleLikesFetch();
+    }, 60000); 
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [posts.length]);
 
   if (loading)
     return <div className="text-center mt-5 h-screen">Chờ chút nhé ...</div>;
@@ -77,12 +101,12 @@ const Post = () => {
                   <button onClick={() => handleLike(post.post_id)}>
                     <FontAwesomeIcon
                       className={`${
-                        likeStatus ? "text-red-600 hover:text-red-300" : ""
+                        post.hasLiked ? "text-red-600 hover:text-red-300" : ""
                       } hover:text-gray-500`}
                       icon={faHeart}
                     />
                   </button>
-                  <p className="text-base">{post.likes_count}</p>
+                  <p className="text-base">{post.likes}</p>
                 </div>
                 <div className="flex gap-1 items-center">
                   <button>

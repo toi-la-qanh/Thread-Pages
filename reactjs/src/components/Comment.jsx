@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useAuth } from "../contexts/AuthContext";
 
+const apiURL = "http://localhost:8000/api/post";
+
 export const useCommentPost = () => {
   const { csrfToken } = useAuth();
 
@@ -8,7 +10,7 @@ export const useCommentPost = () => {
     try {
       await csrfToken();
       const response = await axios.post(
-        `http://localhost:8000/api/post/${postID}/comment`,
+        `${apiURL}/${postID}/comment`,
         {
           content
         },
@@ -26,7 +28,18 @@ export const useCommentPost = () => {
     }
   };
 
-  return commentPost;
+  const fetchCommentsOfPost = async (postID) => {
+    try {
+      const response = await axios.get(
+        `${apiURL}/post/${postID}/comment`);
+      return response.data;
+    } catch (error) {
+      console.error("Error counting likes of this post:", error);
+      return 0;
+    }
+  };
+
+  return {commentPost, fetchCommentsOfPost};
 };
 
 export const useCommentOnComment = ({postID, commentID}) => {
@@ -36,7 +49,7 @@ export const useCommentOnComment = ({postID, commentID}) => {
     try {
       await csrfToken();
       const response = await axios.post(
-        `http://localhost:8000/api/post/${postID}/comment/${commentID}/comment`,
+        `${apiURL}/${postID}/comment/${commentID}/comment`,
         {
             content,
         },

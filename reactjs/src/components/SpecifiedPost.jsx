@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { faRetweet } from "@fortawesome/free-solid-svg-icons";
 import { useParams, NavLink } from "react-router-dom";
-import { useLikePost, useLikeComment, useUnlikePost } from "./Like";
+import { useLikePost, useLikeComment } from "./Like";
 import { useCommentPost, useCommentOnComment } from "./Comment";
 import { useAuth } from "../contexts/AuthContext";
 

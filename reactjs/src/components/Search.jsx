@@ -16,23 +16,50 @@ const Search = () => {
   const [comments, setComments] = useState([]);
   const [active, setActive] = useState("posts");
   const [loading, setLoading] = useState(false);
-  const fetchResults = async () => {
+  const apiURL = "http://localhost:8000/api";
+  const fetchPosts = async () => {
     if (input) {
       const response = await axios.get(
-        `http://localhost:8000/api/search/${input}`
+        `${apiURL}/search/post/${input}`
       );
       if (response) {
         setLoading(false);
-        setPosts(response.data.posts);
-        setUsers(response.data.users);
-        setComments(response.data.comments);
+        setPosts(response.data);
+      } else {
+        setLoading(true);
+      }
+    }
+  };
+  const fetchUsers = async () => {
+    if (input) {
+      const response = await axios.get(
+        `${apiURL}/search/user/${input}`
+      );
+      if (response) {
+        setLoading(false);
+        setUsers(response.data);
+      } else {
+        setLoading(true);
+      }
+    }
+  };
+  const fetchComments = async () => {
+    if (input) {
+      const response = await axios.get(
+        `${apiURL}/search/comment/${input}`
+      );
+      if (response) {
+        setLoading(false);
+        setComments(response.data);
       } else {
         setLoading(true);
       }
     }
   };
   useEffect(() => {
-    fetchResults();
+    fetchPosts();
+    fetchUsers();
+    fetchComments();
   });
   const showPosts = () => setActive("posts");
   const showUsers = () => setActive("users");

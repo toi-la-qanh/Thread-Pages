@@ -12,6 +12,8 @@ const AuthContext = createContext({
   // logout: () => {},
 });
 
+const backendURL = "http://localhost:8000";
+
 export const AuthProvider = () => {
   const [errors, setErrors] = useState([]);
   const [token, setToken] = useState(null);
@@ -20,7 +22,7 @@ export const AuthProvider = () => {
 
   // csrf token generation for guest methods
   const csrfToken = () =>
-    axios.get("http://localhost:8000/sanctum/csrf-cookie", {
+    axios.get(`${backendURL}/sanctum/csrf-cookie`, {
       headers: {
         Accept: "application/json",
       },
@@ -29,7 +31,7 @@ export const AuthProvider = () => {
 
   const getUser = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/user", {
+      const response = await axios.get(`${backendURL}/api/user`, {
         headers: {
           Accept: "application/json",
         },
@@ -55,7 +57,7 @@ export const AuthProvider = () => {
     await csrfToken();
     try {
       const result = await axios.post(
-        "http://localhost:8000/login",
+        `${backendURL}/login`,
         {
           email,
           password,
@@ -99,7 +101,7 @@ export const AuthProvider = () => {
     await csrfToken();
     try {
       const result = await axios.post(
-        "http://localhost:8000/api/register",
+        `${backendURL}/api/register`,
         {
           display_name,
           email,
@@ -145,8 +147,14 @@ export const AuthProvider = () => {
   // };
 
   useEffect(() => {
-    checkToken();
-    getUser();
+    const intervalId = setInterval(() => {
+      checkToken();
+      getUser();
+    }, 300000); 
+
+    return () => {
+      clearInterval(intervalId); 
+    };
   }, []);
 
   return (
