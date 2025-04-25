@@ -2,7 +2,9 @@ import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { RenderRoutes } from "../components/RenderRoutes";
+import UserApi from "../api/user.api";
 
+const userAPI = new UserApi();
 const AuthContext = createContext({
   // token: null,
   // errors: [],
@@ -12,8 +14,6 @@ const AuthContext = createContext({
   // logout: () => {},
 });
 
-const backendURL = "https://thread-laravel.vercel.app";
-
 export const AuthProvider = () => {
   const [errors, setErrors] = useState([]);
   const [token, setToken] = useState(null);
@@ -22,7 +22,7 @@ export const AuthProvider = () => {
 
   // csrf token generation for guest methods
   const csrfToken = () =>
-    axios.get(`${backendURL}/sanctum/csrf-cookie`, {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/sanctum/csrf-cookie`, {
       headers: {
         Accept: "application/json",
       },
@@ -31,12 +31,15 @@ export const AuthProvider = () => {
 
   const getUser = async () => {
     try {
-      const response = await axios.get(`${backendURL}/api/user`, {
-        headers: {
-          Accept: "application/json",
-        },
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/user`,
+        {
+          headers: {
+            Accept: "application/json",
+          },
+          withCredentials: true,
+        }
+      );
       setUser(response.data);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -53,23 +56,10 @@ export const AuthProvider = () => {
     return true;
   };
 
-  const login = async ({ email, password }) => {
+  const login = async ({ data }) => {
     await csrfToken();
     try {
-      const result = await axios.post(
-        `${backendURL}/login`,
-        {
-          email,
-          password,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-          },
-          withCredentials: true,
-          withXSRFToken: true,
-        }
-      );
+      const result = await userAPI.login(data);
       localStorage.setItem("token", JSON.stringify(result.data.token));
       if (checkToken()) {
         navigate("/");
@@ -92,31 +82,10 @@ export const AuthProvider = () => {
     }
   };
 
-  const register = async ({
-    display_name,
-    email,
-    password,
-    password_confirmation,
-  }) => {
+  const register = async ({ data }) => {
     await csrfToken();
     try {
-      const result = await axios.post(
-        `${backendURL}/api/register`,
-        {
-          display_name,
-          email,
-          password,
-          password_confirmation,
-        },
-        {
-          headers: {
-            Accept: "application/json",
-          },
-          withCredentials: true,
-          withXSRFToken: true,
-        }
-      );
-      console.log(result);
+      const result = await userAPI.register(data);
       localStorage.setItem("token", JSON.stringify(result.data.token));
       if (checkToken()) {
         navigate("/");
@@ -150,10 +119,10 @@ export const AuthProvider = () => {
     const intervalId = setInterval(() => {
       checkToken();
       getUser();
-    }, 300000); 
+    }, 300000);
 
     return () => {
-      clearInterval(intervalId); 
+      clearInterval(intervalId);
     };
   }, []);
 

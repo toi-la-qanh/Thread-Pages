@@ -19,4 +19,5 @@ yarn-error.log
 /.idea
 /.vscode
 vercel.json
+/vercel
 .vercel

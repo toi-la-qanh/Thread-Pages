@@ -120,19 +120,19 @@ Route::post('/post/{id}/retweet', [RetweetController::class, 'store'])
 
 // Route for user
 
-Route::post('/register', [RegisteredUserController::class, 'store'])
+Route::post('user/register', [RegisteredUserController::class, 'store'])
     // ->middleware(['guest', 'auth:sanctum'])
     ->name('register');
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+Route::post('user/login', [AuthenticatedSessionController::class, 'store'])
     // ->middleware(['throttle:6,1'])
     ->name('login');
 
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+Route::post('user/forgot-password', [PasswordResetLinkController::class, 'store'])
     // ->middleware(['guest', 'auth:sanctum'])
     ->name('password.email');
 
-Route::post('/reset-password', [NewPasswordController::class, 'store'])
+Route::post('user/reset-password', [NewPasswordController::class, 'store'])
     // ->middleware(['guest', 'auth:sanctum'])
     ->name('password.store');
 
@@ -148,7 +148,7 @@ Route::patch('/user/{id}', [UserController::class, 'update'])
     ->middleware(['auth'])
     ->name('user.update');
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+Route::post('user/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->middleware(['auth'])
     ->name('logout');
 
